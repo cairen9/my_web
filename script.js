@@ -1119,38 +1119,57 @@ function setupSearchAndFilter() {
     const styleFilter = document.getElementById('styleFilter');
     
     if (searchInput) {
-        searchInput.addEventListener('input', filterGallery);
+        searchInput.addEventListener('input', () => filterGallery());
     }
     
     if (styleFilter) {
-        styleFilter.addEventListener('change', filterGallery);
+        styleFilter.addEventListener('change', () => filterGallery());
     }
 }
 
-function filterGallery() {
+async function filterGallery() {
     const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
     const styleFilter = document.getElementById('styleFilter')?.value || '';
     
-    const artworks = JSON.parse(localStorage.getItem('artworks') || '[]');
-    
-    const filtered = artworks.filter(artwork => {
-        const matchesSearch = !searchTerm || 
-            artwork.artTitle.toLowerCase().includes(searchTerm) ||
-            artwork.creatorName.toLowerCase().includes(searchTerm) ||
-            artwork.description.toLowerCase().includes(searchTerm);
+    try {
+        // 从 Supabase 加载所有已通过的作品
+        const { data: artworks, error } = await supabaseClient
+            .from('artworks')
+            .select('*')
+            .eq('status', 'approved')
+            .order('created_at', { ascending: false });
         
-        const matchesStyle = !styleFilter || artwork.artStyle === styleFilter;
+        if (error) {
+            throw error;
+        }
         
-        return matchesSearch && matchesStyle;
-    });
-    
-    renderGallery(filtered);
-    
-    const noResults = document.getElementById('noResults');
-    if (filtered.length === 0 && artworks.length > 0) {
-        noResults?.classList.remove('hidden');
-    } else {
-        noResults?.classList.add('hidden');
+        if (!artworks || artworks.length === 0) {
+            renderGallery([]);
+            return;
+        }
+        
+        // 过滤搜索结果
+        const filtered = artworks.filter(artwork => {
+            const matchesSearch = !searchTerm || 
+                (artwork.art_title && artwork.art_title.toLowerCase().includes(searchTerm)) ||
+                (artwork.creator_name && artwork.creator_name.toLowerCase().includes(searchTerm)) ||
+                (artwork.description && artwork.description.toLowerCase().includes(searchTerm));
+            
+            const matchesStyle = !styleFilter || artwork.art_style === styleFilter;
+            
+            return matchesSearch && matchesStyle;
+        });
+        
+        renderGallery(filtered);
+        
+        const noResults = document.getElementById('noResults');
+        if (filtered.length === 0 && artworks.length > 0) {
+            noResults?.classList.remove('hidden');
+        } else {
+            noResults?.classList.add('hidden');
+        }
+    } catch (error) {
+        console.error('搜索失败:', error);
     }
 }
 
