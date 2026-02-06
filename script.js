@@ -169,6 +169,9 @@ async function initSupabase() {
 // 初始化 Supabase
 let supabaseInitPromise = initSupabase();
 
+// 挂载到全局，确保所有页面都能访问
+window.supabaseInitPromise = supabaseInitPromise;
+
 // ==================== 全局函数 ====================
 
 // 打开视觉艺术页面（全局函数，供 HTML onclick 调用）
@@ -962,12 +965,22 @@ async function submitArtwork(event) {
     submitText.style.display = 'none';
     loadingText.style.display = 'inline';
     
+    // 确保 Supabase 可用
+    const client = supabaseClient || window.supabaseClient;
+    if (!client) {
+        alert('数据库连接失败，请刷新页面重试');
+        submitButton.disabled = false;
+        submitText.style.display = 'inline';
+        loadingText.style.display = 'none';
+        return;
+    }
+    
     try {
         // 1. 上传图片到 Supabase Storage
         const fileExt = formData.imageFile.name.split('.').pop();
         const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
         
-        const { error: uploadError } = await supabaseClient.storage
+        const { error: uploadError } = await client.storage
             .from('artworks')
             .upload(fileName, formData.imageFile);
         
@@ -976,12 +989,12 @@ async function submitArtwork(event) {
         }
         
         // 2. 获取图片的公开URL
-        const { data: { publicUrl: imageUrl } } = supabaseClient.storage
+        const { data: { publicUrl: imageUrl } } = client.storage
             .from('artworks')
             .getPublicUrl(fileName);
         
         // 3. 提交数据到 Supabase 数据库
-        const { error: dbError } = await supabaseClient
+        const { error: dbError } = await client
             .from('artworks')
             .insert({
                 prompt: formData.prompt,
@@ -1047,9 +1060,17 @@ async function loadGallery() {
     const galleryGrid = document.getElementById('galleryGrid');
     if (!galleryGrid) return;
     
+    // 确保 Supabase 已初始化
+    const client = supabaseClient || window.supabaseClient;
+    if (!client) {
+        console.error('Supabase 客户端未初始化');
+        galleryGrid.innerHTML = '<div class="error"><p>❌ 数据库连接失败，请刷新页面重试</p></div>';
+        return;
+    }
+    
     try {
         // 从 Supabase 加载作品（只显示已通过的作品）
-        const { data: artworks, error } = await supabaseClient
+        const { data: artworks, error } = await client
             .from('artworks')
             .select('*')
             .eq('status', 'approved')

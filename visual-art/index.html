@@ -195,21 +195,26 @@
     <script>
         // 视觉艺术页面专用脚本
         if (window.location.pathname.includes('visual-art')) {
-            // 等待 Supabase 初始化完成
-            if (window.supabaseInitPromise) {
-                window.supabaseInitPromise.then(() => {
+            // 等待 Supabase 初始化完成的函数
+            function waitForSupabase() {
+                if (window.supabaseClient) {
+                    // Supabase 已初始化
                     initVisualArtPage();
-                }).catch(error => {
-                    console.error('Supabase 初始化失败:', error);
-                });
-            } else {
-                // 备用方案：延迟执行
-                setTimeout(() => {
-                    if (window.supabaseClient) {
+                } else if (window.supabaseInitPromise) {
+                    // 使用 Promise 等待初始化
+                    window.supabaseInitPromise.then(() => {
                         initVisualArtPage();
-                    }
-                }, 1000);
+                    }).catch(error => {
+                        console.error('Supabase 初始化失败:', error);
+                    });
+                } else {
+                    // 还未准备好，继续等待
+                    setTimeout(waitForSupabase, 100);
+                }
             }
+            
+            // 开始等待
+            waitForSupabase();
         }
     </script>
 </body>
