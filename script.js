@@ -135,32 +135,39 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 let supabaseClient = null;
 
 async function initSupabase() {
-    try {
-        // 创建一个脚本来加载 Supabase 库
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
-        script.onload = () => {
-            try {
-                // 使用全局的 supabase 对象
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                // 挂载到全局，供其他页面使用
-                window.supabaseClient = supabaseClient;
-                console.log('✅ Supabase 客户端初始化成功');
-            } catch (error) {
-                console.error('❌ Supabase 客户端初始化失败:', error);
-            }
-        };
-        script.onerror = () => {
-            console.error('❌ Supabase 库加载失败');
-        };
-        document.head.appendChild(script);
-    } catch (error) {
-        console.error('❌ Supabase 初始化失败:', error);
-    }
+    return new Promise((resolve, reject) => {
+        try {
+            // 创建一个脚本来加载 Supabase 库
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+            script.onload = () => {
+                try {
+                    // 使用全局的 supabase 对象
+                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                    // 挂载到全局，供其他页面使用
+                    window.supabaseClient = supabaseClient;
+                    console.log('✅ Supabase 客户端初始化成功');
+                    resolve(supabaseClient);
+                } catch (error) {
+                    console.error('❌ Supabase 客户端初始化失败:', error);
+                    reject(error);
+                }
+            };
+            script.onerror = (error) => {
+                console.error('❌ Supabase 库加载失败:', error);
+                reject(error);
+            };
+            
+            document.head.appendChild(script);
+        } catch (error) {
+            console.error('❌ Supabase 初始化失败:', error);
+            reject(error);
+        }
+    });
 }
 
 // 初始化 Supabase
-initSupabase();
+let supabaseInitPromise = initSupabase();
 
 // ==================== 全局函数 ====================
 

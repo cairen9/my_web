@@ -195,7 +195,21 @@
     <script>
         // 视觉艺术页面专用脚本
         if (window.location.pathname.includes('visual-art')) {
-            initVisualArtPage();
+            // 等待 Supabase 初始化完成
+            if (window.supabaseInitPromise) {
+                window.supabaseInitPromise.then(() => {
+                    initVisualArtPage();
+                }).catch(error => {
+                    console.error('Supabase 初始化失败:', error);
+                });
+            } else {
+                // 备用方案：延迟执行
+                setTimeout(() => {
+                    if (window.supabaseClient) {
+                        initVisualArtPage();
+                    }
+                }, 1000);
+            }
         }
     </script>
 </body>
