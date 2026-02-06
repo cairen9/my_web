@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="创作收集表单平台 - 收集和管理各类创意作品">
+    <title>创作收集平台</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 导航菜单 -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="#home">创作收集平台</a>
+            </div>
+            
+            <!-- 移动端汉堡菜单按钮 -->
+            <button class="nav-toggle" id="navToggle" aria-label="切换菜单">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <!-- 导航链接 -->
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#home">首页</a></li>
+                <li><a href="#about">平台介绍</a></li>
+                <li><a href="#services">创作服务</a></li>
+                <li><a href="#contact">提交作品</a></li>
+                <li><a href="visual-art/">视觉艺术</a></li>
+            </ul>
+            
+            <!-- 主题切换按钮 -->
+            <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main>
+        <!-- 首页区域 -->
+        <section id="home" class="hero-section">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>创作收集平台</h1>
+                    <p>收集、管理和展示您的创意作品，让每一份创作都被看见</p>
+                    <a href="#contact" class="btn btn-primary">提交作品</a>
+                    <a href="#about" class="btn btn-secondary">了解平台</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关于我们区域 -->
+        <section id="about" class="section">
+            <div class="container">
+                <h2 class="section-title">平台介绍</h2>
+                <div class="about-grid">
+                    <div class="about-card">
+                        <div class="card-icon">🎯</div>
+                        <h3>收集创作</h3>
+                        <p>为创作者提供便捷的表单工具，轻松收集各类创意作品</p>
+                    </div>
+                    <div class="about-card">
+                        <div class="card-icon">💡</div>
+                        <h3>智能管理</h3>
+                        <p>自动分类整理作品，支持标签、分类和搜索功能</p>
+                    </div>
+                    <div class="about-card">
+                        <div class="card-icon">🤝</div>
+                        <h3>展示分享</h3>
+                        <p>精选优秀作品展示，帮助创作者获得更多关注和机会</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 服务区域 -->
+        <section id="services" class="section section-alt">
+            <div class="container">
+                <h2 class="section-title">创作服务</h2>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <h3>📝 文字创作</h3>
+                        <p>收集文章、故事、诗歌、剧本等各类文字作品</p>
+                    </div>
+                    <div class="service-card" onclick="window.location.href='visual-art/'" style="cursor: pointer;">
+                        <h3>🎨 视觉艺术</h3>
+                        <p>收集插画、摄影、设计、绘画等视觉作品</p>
+                        <p style="color: var(--primary); margin-top: 10px;">点击进入 →</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>🎵 音频创作</h3>
+                        <p>收集音乐、播客、有声书等音频内容</p>
+                    </div>
+                    <div class="service-card">
+                        <h3>🎬 视频创作</h3>
+                        <p>收集短视频、动画、纪录片等视频作品</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 联系我们区域 -->
+        <section id="contact" class="section">
+            <div class="container">
+                <h2 class="section-title">提交创作</h2>
+                <div class="contact-container">
+                    <!-- 作品提交表单 -->
+                    <div class="contact-form-wrapper">
+                        <form id="contactForm" class="contact-form">
+                            <div class="form-group">
+                                <label for="name">创作者姓名 *</label>
+                                <input 
+                                    type="text" 
+                                    id="name" 
+                                    name="name" 
+                                    required 
+                                    placeholder="请输入您的姓名或昵称"
+                                >
+                                <span class="error-message" id="nameError"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">联系邮箱 *</label>
+                                <input 
+                                    type="email" 
+                                    id="email" 
+                                    name="email" 
+                                    required 
+                                    placeholder="请输入您的邮箱地址"
+                                >
+                                <span class="error-message" id="emailError"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phone">联系电话（选填）</label>
+                                <input
+                                    type="tel"
+                                    id="phone"
+                                    name="phone"
+                                    placeholder="请输入您的电话号码（用于联系）"
+                                >
+                                <span class="error-message" id="phoneError"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="subject">作品标题 *</label>
+                                <input 
+                                    type="text" 
+                                    id="subject" 
+                                    name="subject" 
+                                    required 
+                                    placeholder="请输入您的作品标题"
+                                >
+                                <span class="error-message" id="subjectError"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="message">作品描述 *</label>
+                                <textarea 
+                                    id="message" 
+                                    name="message" 
+                                    rows="5" 
+                                    required 
+                                    placeholder="请描述您的创作内容、创作灵感和背景故事"
+                                ></textarea>
+                                <span class="error-message" id="messageError"></span>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-full">
+                                提交作品
+                            </button>
+                        </form>
+                        
+                        <!-- 提交成功提示 -->
+                        <div id="successMessage" class="success-message hidden">
+                            <div class="success-icon">✓</div>
+                            <h3>作品提交成功！</h3>
+                            <p>感谢您的创作分享，我们会审核后尽快与您联系。</p>
+                            <button class="btn btn-primary" onclick="resetForm()">继续提交</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 联系信息 -->
+                    <div class="contact-info">
+                        <h3>联系方式</h3>
+                        <div class="info-item">
+                            <span class="info-icon">📍</span>
+                            <div>
+                                <strong>地址</strong>
+                                <p>中国 某某市 某某区 某某街道 123号</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-icon">📧</span>
+                            <div>
+                                <strong>邮箱</strong>
+                                <p>contact@example.com</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-icon">📞</span>
+                            <div>
+                                <strong>电话</strong>
+                                <p>+86 123 4567 8900</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-icon">🕐</span>
+                            <div>
+                                <strong>工作时间</strong>
+                                <p>周一至周五 9:00 - 18:00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- AI 聊天助手 -->
+    <div id="ai-chat-button">
+        <button id="chat-toggle-btn">
+            💬 AI助手
+        </button>
+    </div>
+
+    <div id="ai-chat-window">
+        <div class="chat-header">
+            <h3>AI 智能助手</h3>
+            <button id="close-chat">&times;</button>
+        </div>
+        <div class="chat-messages">
+            <div class="message assistant">
+                你好！我是AI助手，有什么可以帮助你的吗？
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chat-input-field" placeholder="输入你的问题...">
+            <button id="send-message">发送</button>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 创作收集平台. 致力于收集和展示优秀创意作品.</p>
+        </div>
+    </footer>
+
+    <!-- 全局配置（用于环境变量） -->
+    <script>
+        // 在window对象上设置环境变量（可被script.js读取）
+        window.ENV = {
+            VITE_IFLOW_API_KEY: 'sk-192e9f7472bf5f5efa593fd9c60b4f51'
+        };
+    </script>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
