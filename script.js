@@ -372,6 +372,7 @@ async function submitForm() {
         }
     }
 }
+}  // 闭合 if (contactForm)
 
 // 重置表单
 function resetForm() {
