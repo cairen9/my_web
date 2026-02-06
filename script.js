@@ -20,18 +20,20 @@ navToggle.addEventListener('click', () => {
 });
 
 // 点击导航链接后关闭移动端菜单
-navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-        // 关闭移动端菜单
-        navToggle.classList.remove('active');
-        navMenu.classList.remove('active');
-        document.body.style.overflow = '';
-        
-        // 更新活动状态
-        navLinks.forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
+if (navLinks && navLinks.length > 0) {
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            // 关闭移动端菜单
+            if (navToggle) navToggle.classList.remove('active');
+            if (navMenu) navMenu.classList.remove('active');
+            document.body.style.overflow = '';
+            
+            // 更新活动状态
+            navLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+        });
     });
-});
+}
 
 // 滚动时导航栏效果
 let lastScroll = 0;
@@ -39,20 +41,26 @@ window.addEventListener('scroll', () => {
     const currentScroll = window.pageYOffset;
     
     // 添加滚动阴影效果
-    if (currentScroll > 50) {
-        navbar.classList.add('scrolled');
-    } else {
-        navbar.classList.remove('scrolled');
+    if (navbar) {
+        if (currentScroll > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
     }
     
     // 更新导航链接活动状态（基于滚动位置）
-    updateActiveNavLink();
+    if (navbar) {
+        updateActiveNavLink();
+    }
     
     lastScroll = currentScroll;
 });
 
 // 更新导航链接活动状态
 function updateActiveNavLink() {
+    if (!navLinks || navLinks.length === 0) return;
+    
     const sections = document.querySelectorAll('section[id]');
     const scrollPosition = window.pageYOffset + 100;
     
@@ -287,8 +295,9 @@ function showError(field, errorElement, message) {
 }
 
 // 表单提交处理
-contactForm.addEventListener('submit', (e) => {
-    e.preventDefault();
+if (contactForm) {
+    contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
     
     // 验证所有字段
     const fields = contactForm.querySelectorAll('input, textarea');
