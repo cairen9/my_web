@@ -37,25 +37,23 @@ if (navLinks && navLinks.length > 0) {
 
 // 滚动时导航栏效果
 let lastScroll = 0;
-window.addEventListener('scroll', () => {
-    const currentScroll = window.pageYOffset;
-    
-    // 添加滚动阴影效果
-    if (navbar) {
+if (navbar) {
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+        
+        // 添加滚动阴影效果
         if (currentScroll > 50) {
             navbar.classList.add('scrolled');
         } else {
             navbar.classList.remove('scrolled');
         }
-    }
-    
-    // 更新导航链接活动状态（基于滚动位置）
-    if (navbar) {
+        
+        // 更新导航链接活动状态（基于滚动位置）
         updateActiveNavLink();
-    }
-    
-    lastScroll = currentScroll;
-});
+        
+        lastScroll = currentScroll;
+    });
+}
 
 // 更新导航链接活动状态
 function updateActiveNavLink() {
@@ -145,6 +143,8 @@ async function initSupabase() {
             try {
                 // 使用全局的 supabase 对象
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                // 挂载到全局，供其他页面使用
+                window.supabaseClient = supabaseClient;
                 console.log('✅ Supabase 客户端初始化成功');
             } catch (error) {
                 console.error('❌ Supabase 客户端初始化失败:', error);
@@ -452,17 +452,19 @@ function throttle(func, limit) {
 }
 
 // 将节流应用到滚动事件监听
-const throttledScroll = throttle(() => {
-    const currentScroll = window.pageYOffset;
+if (navbar) {
+    const throttledScroll = throttle(() => {
+        const currentScroll = window.pageYOffset;
+        
+        if (currentScroll > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    }, 100);
     
-    if (currentScroll > 50) {
-        navbar.classList.add('scrolled');
-    } else {
-        navbar.classList.remove('scrolled');
-    }
-}, 100);
-
-window.addEventListener('scroll', throttledScroll);
+    window.addEventListener('scroll', throttledScroll);
+}
 
 // 检测设备类型（用于响应式优化）
 function isMobile() {
