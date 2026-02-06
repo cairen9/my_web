@@ -190,31 +190,24 @@
         </div>
     </div>
 
+    <!-- Supabase 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    
     <!-- JavaScript -->
     <script src="../script.js"></script>
     <script>
         // 视觉艺术页面专用脚本
         if (window.location.pathname.includes('visual-art')) {
-            // 等待 Supabase 初始化完成的函数
-            function waitForSupabase() {
-                if (window.supabaseClient) {
-                    // Supabase 已初始化
-                    initVisualArtPage();
-                } else if (window.supabaseInitPromise) {
-                    // 使用 Promise 等待初始化
-                    window.supabaseInitPromise.then(() => {
-                        initVisualArtPage();
-                    }).catch(error => {
-                        console.error('Supabase 初始化失败:', error);
-                    });
-                } else {
-                    // 还未准备好，继续等待
-                    setTimeout(waitForSupabase, 100);
-                }
-            }
+            // 独立初始化 Supabase（不依赖 script.js）
+            const SUPABASE_URL = 'https://oylnjffrjdjaooeaqtvl.supabase.co';
+            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im95bG5qZmZyamRqYW9vZWFxdHZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTAwMDMsImV4cCI6MjA4NTMyNjAwM30.1V70qcXvATKaBCVtK9sdLGK7-l2cxa4muLonpVGmiM8';
             
-            // 开始等待
-            waitForSupabase();
+            // 创建 Supabase 客户端
+            window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            console.log('✅ 视觉艺术页面 Supabase 初始化成功');
+            
+            // 初始化页面
+            initVisualArtPage();
         }
     </script>
 </body>
