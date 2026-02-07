@@ -221,6 +221,8 @@
                     console.log('📊 开始加载作品数据...');
                     
                     // 显示加载状态
+                    galleryGrid.style.display = 'block';
+                    galleryGrid.style.visibility = 'visible';
                     galleryGrid.innerHTML = '<div class="loading">正在加载作品...</div>';
                     
                     // 从 Supabase 加载作品（只显示已通过的作品）
@@ -245,8 +247,8 @@
                     
                     // 渲染画廊
                     const html = artworks.map(artwork => `
-                        <div class="gallery-item" onclick="openModal('${artwork.id}')">
-                            <img src="${artwork.image_url}" alt="${artwork.art_title || '作品'}" loading="lazy" onerror="this.style.display='none'; console.error('图片加载失败:', '${artwork.image_url}')">
+                        <div class="gallery-item" onclick="openModal('${artwork.id}')" style="display: block;">
+                            <img src="${artwork.image_url}" alt="${artwork.art_title || '作品'}" loading="lazy" style="display: block; width: 100%; height: 200px; object-fit: cover;" onerror="this.style.display='none'; console.error('图片加载失败:', '${artwork.image_url}')">
                             <div class="gallery-item-info">
                                 <div class="gallery-item-title">${artwork.art_title || '未命名作品'}</div>
                                 <div class="gallery-item-creator">by ${artwork.creator_name || '匿名创作者'}</div>
@@ -257,6 +259,8 @@
                     `).join('');
                     
                     galleryGrid.innerHTML = html;
+                    galleryGrid.style.display = 'block';
+                    galleryGrid.style.visibility = 'visible';
                     console.log('✅ 成功渲染', artworks.length, '张图片');
                     
                     // 验证渲染结果
