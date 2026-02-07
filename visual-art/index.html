@@ -195,47 +195,56 @@
     
     <!-- JavaScript -->
     <script src="../script.js"></script>
+    
     <script>
-        // 视觉艺术页面专用脚本
-        if (window.location.pathname.includes('visual-art')) {
-            // 独立初始化 Supabase（不依赖 script.js）
+        // 视觉艺术页面：完全独立的图片加载和渲染
+        (async function initVisualArtGallery() {
+            console.log('🎨 初始化视觉艺术画廊...');
+            
             const SUPABASE_URL = 'https://oylnjffrjdjaooeaqtvl.supabase.co';
             const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im95bG5qZmZyamRqYW9vZWFxdHZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTAwMDMsImV4cCI6MjA4NTMyNjAwM30.1V70qcXvATKaBCVtK9sdLGK7-l2cxa4muLonpVGmiM8';
             
             // 创建 Supabase 客户端
-            window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            console.log('✅ 视觉艺术页面 Supabase 初始化成功');
+            const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            console.log('✅ Supabase 客户端已创建');
             
-            // 独立的图片加载和渲染函数
+            // 获取画廊容器
+            const galleryGrid = document.getElementById('galleryGrid');
+            if (!galleryGrid) {
+                console.error('❌ 找不到画廊容器');
+                return;
+            }
+            
+            // 加载并渲染画廊
             async function loadAndRenderGallery() {
-                const galleryGrid = document.getElementById('galleryGrid');
-                if (!galleryGrid) {
-                    console.error('❌ 找不到画廊容器');
-                    return;
-                }
-                
                 try {
+                    console.log('📊 开始加载作品数据...');
+                    
                     // 显示加载状态
                     galleryGrid.innerHTML = '<div class="loading">正在加载作品...</div>';
                     
-                    // 从 Supabase 加载作品
-                    const { data: artworks, error } = await window.supabaseClient
+                    // 从 Supabase 加载作品（只显示已通过的作品）
+                    const { data: artworks, error } = await supabaseClient
                         .from('artworks')
                         .select('*')
                         .eq('status', 'approved')
                         .order('created_at', { ascending: false });
                     
                     if (error) {
-                        throw error;
+                        throw new Error('数据库查询失败: ' + error.message);
                     }
                     
                     if (!artworks || artworks.length === 0) {
                         galleryGrid.innerHTML = '<div class="no-results"><p>暂无作品，快来提交第一个作品吧！</p></div>';
+                        console.log('ℹ️ 没有找到作品');
                         return;
                     }
                     
+                    console.log('✅ 成功获取', artworks.length, '条记录');
+                    console.log('第一条记录:', artworks[0]);
+                    
                     // 渲染画廊
-                    galleryGrid.innerHTML = artworks.map(artwork => `
+                    const html = artworks.map(artwork => `
                         <div class="gallery-item" onclick="openModal('${artwork.id}')">
                             <img src="${artwork.image_url}" alt="${artwork.art_title || '作品'}" loading="lazy" onerror="this.style.display='none'; console.error('图片加载失败:', '${artwork.image_url}')">
                             <div class="gallery-item-info">
@@ -247,20 +256,30 @@
                         </div>
                     `).join('');
                     
+                    galleryGrid.innerHTML = html;
                     console.log('✅ 成功渲染', artworks.length, '张图片');
+                    
+                    // 验证渲染结果
+                    setTimeout(() => {
+                        const items = galleryGrid.querySelectorAll('.gallery-item');
+                        console.log('📊 渲染验证:', items.length, '个 item');
+                        
+                        if (items.length !== artworks.length) {
+                            console.error('❌ 渲染数量不匹配:', items.length, '!==', artworks.length);
+                        }
+                    }, 100);
+                    
                 } catch (error) {
                     console.error('❌ 加载失败:', error);
                     galleryGrid.innerHTML = '<div class="error"><p>❌ 加载失败，请稍后重试</p></div>';
                 }
             }
             
-            // 页面加载完成后立即渲染
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', loadAndRenderGallery);
-            } else {
-                loadAndRenderGallery();
-            }
-        }
+            // 立即加载渲染
+            loadAndRenderGallery();
+            
+            console.log('✅ 视觉艺术画廊初始化完成');
+        })();
     </script>
 </body>
 </html>
