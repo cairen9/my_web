@@ -208,12 +208,18 @@
             const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             console.log('✅ Supabase 客户端已创建');
             
-            // 获取画廊容器
+            // 获取画廊容器和面板
+            const galleryPanel = document.getElementById('galleryPanel');
             const galleryGrid = document.getElementById('galleryGrid');
-            if (!galleryGrid) {
+            
+            if (!galleryPanel || !galleryGrid) {
                 console.error('❌ 找不到画廊容器');
                 return;
             }
+            
+            // 确保画廊面板可见
+            galleryPanel.style.display = 'block';
+            galleryPanel.classList.add('active');
             
             // 加载并渲染画廊
             async function loadAndRenderGallery() {
@@ -261,6 +267,7 @@
                     galleryGrid.innerHTML = html;
                     galleryGrid.style.display = 'block';
                     galleryGrid.style.visibility = 'visible';
+                    
                     console.log('✅ 成功渲染', artworks.length, '张图片');
                     
                     // 验证渲染结果
