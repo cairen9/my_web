@@ -206,8 +206,60 @@
             window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             console.log('✅ 视觉艺术页面 Supabase 初始化成功');
             
-            // 初始化页面
-            initVisualArtPage();
+            // 独立的图片加载和渲染函数
+            async function loadAndRenderGallery() {
+                const galleryGrid = document.getElementById('galleryGrid');
+                if (!galleryGrid) {
+                    console.error('❌ 找不到画廊容器');
+                    return;
+                }
+                
+                try {
+                    // 显示加载状态
+                    galleryGrid.innerHTML = '<div class="loading">正在加载作品...</div>';
+                    
+                    // 从 Supabase 加载作品
+                    const { data: artworks, error } = await window.supabaseClient
+                        .from('artworks')
+                        .select('*')
+                        .eq('status', 'approved')
+                        .order('created_at', { ascending: false });
+                    
+                    if (error) {
+                        throw error;
+                    }
+                    
+                    if (!artworks || artworks.length === 0) {
+                        galleryGrid.innerHTML = '<div class="no-results"><p>暂无作品，快来提交第一个作品吧！</p></div>';
+                        return;
+                    }
+                    
+                    // 渲染画廊
+                    galleryGrid.innerHTML = artworks.map(artwork => `
+                        <div class="gallery-item" onclick="openModal('${artwork.id}')">
+                            <img src="${artwork.image_url}" alt="${artwork.art_title || '作品'}" loading="lazy" onerror="this.style.display='none'; console.error('图片加载失败:', '${artwork.image_url}')">
+                            <div class="gallery-item-info">
+                                <div class="gallery-item-title">${artwork.art_title || '未命名作品'}</div>
+                                <div class="gallery-item-creator">by ${artwork.creator_name || '匿名创作者'}</div>
+                                <div class="gallery-item-style">${artwork.art_style || ''}</div>
+                                <div class="gallery-item-model">${artwork.ai_model || '未知模型'}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    console.log('✅ 成功渲染', artworks.length, '张图片');
+                } catch (error) {
+                    console.error('❌ 加载失败:', error);
+                    galleryGrid.innerHTML = '<div class="error"><p>❌ 加载失败，请稍后重试</p></div>';
+                }
+            }
+            
+            // 页面加载完成后立即渲染
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', loadAndRenderGallery);
+            } else {
+                loadAndRenderGallery();
+            }
         }
     </script>
 </body>
